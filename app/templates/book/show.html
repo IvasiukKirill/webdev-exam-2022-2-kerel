@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <section class="about">
+        <h1 class="text-center text-light">{{book.name_book}}</h1>
+        <div class="row">
+            <div class="col-3 d-flex flex-column">
+                <p class="flex-grow-1"><img src="{{book.covers.url}}" alt="" style="max-width: 200px;"></p>
+                <span class='text-primary'>★{{book.score}} ({{book.comment_count}})</span>
+                <span class='text-light'>Жанр(ы): {%for genry in book.genrys %}{{genry.name}} {%endfor%}</span>
+                <span class='text-light'>Издательство: {{book.publishing_house}}</span>
+                <span class='text-light'>Автор: {{book.author}}</span>
+                <span class='text-light'>Объем: {{book.volume}}</span>
+            </div>
+            <div class="col text-light">
+                <p>{{ book.formatted_description|safe }}</p>
+            </div>
+        </div>
+    </section>
+    <section class="notice mt-5">
+        <h3 class="text-center text-light">Рецензии</h3>
+        {% for comment in book.comment %}
+        <div class=" ms-5 d-flex">
+            <div class="flex-grow-1">
+                <h5 class='text-light'> {{ comment.user.full_name }} <small class="text-muted">{{comment.date_added}}</small> </h5>
+                <p class='text-light'> {{comment.text}}</p>
+            </div>
+            <div>
+                <span class='text-primary'>{% for i in range (comment.mark)%}★{%endfor%}</span> 
+            </div>
+        </div>
+        {% endfor %}
+        {% if current_user.is_authenticated and not curr_comment %}
+        <div class="row">
+            <a class="btn btn-dark my-3 col-2 mx-auto bg-light text-dark" href="{{ url_for('books.comment', book_id=book.id) }}" role="
+                    button">Написать рецензию</a>
+        </div>
+        {% elif curr_comment %}
+        <section>
+
+            <h4 class="text-center  mt-5 text-light">Ваша рецензия</h4>       
+            <div class="ms-5 mb-2 d-flex border-bottom">
+                <div class="flex-grow-1">
+                    <h5 class='text-light'>{{ curr_comment.user.first_name }} {{ curr_comment.user.last_name }} <small class="text-muted">{{curr_comment.date_added}}</small></h5>
+                    {{ curr_comment.formatted_text | safe}}
+                </div>
+                <div class='text-light'>
+                    {% for i in range (curr_comment.mark)%}★{%endfor%}
+                </div>
+            </div>
+        </section>
+        
+    {% endif %}
+
+    </section>
+</div>
+
+
+{% endblock %}
